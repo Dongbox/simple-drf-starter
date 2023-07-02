@@ -2,12 +2,6 @@ stages:
   - lint
   - test
 
-variables:
-  POSTGRES_USER: 'simple_drf_starter'
-  POSTGRES_PASSWORD: ''
-  POSTGRES_DB: 'test_simple_drf_starter'
-  POSTGRES_HOST_AUTH_METHOD: trust
-
 precommit:
   stage: lint
   image: python:3.11

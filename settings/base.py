@@ -3,16 +3,12 @@ Base settings to build other settings files upon.
 """
 from pathlib import Path
 import datetime
-import sys
 
 import environ
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # apps/
 APPS_DIR = BASE_DIR / "apps"
-
-# 添加APPS的路径到环境变量中
-sys.path.append(str(APPS_DIR))
 
 env = environ.Env()
 
@@ -82,8 +78,8 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     "rest_framework",
-    "rest_framework.authtoken",
     "corsheaders",
+    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
@@ -257,58 +253,23 @@ MANAGERS = ADMINS
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # See https://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
-# Logging
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "root": {"level": "INFO", "handlers": ["console"]},
-    "filters": {
-        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
-        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
-    },
     "formatters": {
-        "simple": {
-            "format": "[%(asctime)s] %(levelname)s %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
         "verbose": {
-            "format": "[%(asctime)s] %(levelname)s %(module)s %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
         },
     },
     "handlers": {
         "console": {
-            "level": "INFO",
-            "filters": ["require_debug_true"],
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-        "logfile": {
             "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "django.log"),
-            "maxBytes": 50000,
-            "backupCount": 10,
+            "class": "logging.StreamHandler",
             "formatter": "verbose",
-        },
+        }
     },
-    "loggers": {
-        "django": {"handlers": ["console"], "propagate": False},
-        "django.request": {
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "django.security": {
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "django.db.backends": {
-            "level": "ERROR",
-            "propagate": False,
-        },
-    },
+    "root": {"level": "INFO", "handlers": ["console"]},
 }
-
 # CACHES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#CACHES
@@ -342,6 +303,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 6,
     "ORDERING_PARAM": "sort",
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 #

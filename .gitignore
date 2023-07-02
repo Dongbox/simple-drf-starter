@@ -272,6 +272,6 @@ tags
 dump.rdb
 
 ### Project template
-simple_drf_starter/media/
+*/media/
 
 .pytest_cache/
