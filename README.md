@@ -20,8 +20,8 @@ This project aims to provide a robust and maintainable project structure for beg
 2. [x] Modify the structure according to other projects to make it more suitable for DRF's `restful` style framework
    - [x] Add `JWT` verification
    - [x] Update `user` management methods
-   - Add custom `middleware` for global exception handling
-   - Add `throttling` configuration
+   - [x] Add custom `middleware` for global exception handling
+   - [x] Add `throttling` configuration
 3. Wrap with `cookiecutter` for custom deployment
 4. Support for more configuration items
 

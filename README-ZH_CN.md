@@ -20,8 +20,8 @@
 2. [x] 根据其他项目修改结构，使其更适合DRF的`restful`风格框架
    - [x] 添加`JWT`验证
    - [x] 更新`user`管理方法
-   - 添加自定义`middleware`进行全局异常处理
-   - 添加`throttling`配置
+   - [x] 添加自定义`middleware`进行全局异常处理
+   - [x] 添加`throttling`配置
 3. 使用`cookiecutter`进行自定义部署
 4. 支持更多配置项
 

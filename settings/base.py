@@ -67,7 +67,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -75,6 +74,7 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # "django.contrib.humanize", # Handy template tags
+    "django.contrib.admin",
 ]
 THIRD_PARTY_APPS = [
     "rest_framework",
@@ -149,6 +149,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     # XFrameOptionsMiddleware 为了防止点击劫持，这个中间件通过设置X-Frame-Options头来控制页面是否可以被嵌套在<frame>或<iframe>标签内。
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # 自定义MIDDLEWARE
+    "config.middleware.CustomExceptionMiddleware",
 ]
 
 # STATIC
@@ -284,39 +286,71 @@ CACHES = {
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
+    # 设置默认的分页类。
+    # 这是一个简单的分页方案，客户端可以通过指定一个页码来请求一组项目。
     "DEFAULT_PAGINATION_CLASS": ("rest_framework.pagination.PageNumberPagination"),
+    # 设置默认的解析器类，这些类负责解析客户端发送的请求体。
+    # 在此配置中，有三个解析器：JSONParser 解析 JSON 请求体，FormParser 解析表单请求体，MultiPartParser 解析多部分请求体（通常用于文件上传）。
     "DEFAULT_PARSER_CLASSES": (
         "rest_framework.parsers.JSONParser",
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
+    # 设置默认的渲染器类，这些类负责将响应数据渲染为内容类型。
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    # 只有经过身份验证的用户才能访问 API, 各别视图可以声明匿名权限解开此限制
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # 设置默认的认证类。在此配置中，使用的是 Simple JWT 的 JWTAuthentication 类来处理 JSON Web Tokens。
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    # 设置默认的页面大小。
     "PAGE_SIZE": 6,
+    # 设置用于查询参数的名称，以允许客户端指定排序顺序。
     "ORDERING_PARAM": "sort",
+    # 设置测试请求的默认格式。
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    # 设置用于自动生成 API schema 的类。
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # 设置默认的节流（throttle）类。这些类用于控制 API 的请求速率。
+    "DEFAULT_THROTTLE_CLASSES": [
+        # 匿名用户
+        "rest_framework.throttling.AnonRateThrottle",
+        # 认证用户
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    # 设置默认的节流率。
+    "DEFAULT_THROTTLE_RATES": {"anon": "100/minute", "user": "100/minute"},
 }
 
-#
+# 用于指示 Django REST framework 在身份验证过程中使用 JSON Web Tokens (JWT) 而不是使用传统的令牌。
 REST_USE_JWT = True
 
 SIMPLE_JWT = {
+    # 定义了访问令牌(access token)的生命周期
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=1),
+    # 刷新令牌通常用于在不要求用户重新登录的情况下，获取一个新的访问令牌。
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
+    # 这个布尔值设置决定是否在使用刷新令牌获取新的访问令牌时，旋转(或替换)刷新令牌。
     "ROTATE_REFRESH_TOKENS": False,
+    # 这个布尔值设置决定是否在使用刷新令牌获取新的访问令牌时，旋转(或替换)刷新令牌。
     "UPDATE_LAST_LOGIN": True,
+    # 这定义了用于签署和验证JWT的加密算法。
     "ALGORITHM": "HS256",
+    # 这定义了认证头部的类型。
     "AUTH_HEADER_TYPES": ("Bearer",),
+    # 这定义了用于携带JWT的HTTP头部的名称。
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    # 定义了在用户模型中用于表示用户ID的字段名称。
     "USER_ID_FIELD": "id",
+    # 定义了在JWT的有效负载(payload)中，表示用户ID的声明名称。
     "USER_ID_CLAIM": "user_id",
+    # 定义了在JWT的有效负载中，表示令牌类型的声明名称。
     "TOKEN_TYPE_CLAIM": "token_type",
+    # 定义了JWT的JWT ID (JTI)的声明名称。JTI通常是一个唯一标识符，用于标识单个JWT。
     "JTI_CLAIM": "jti",
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
+# 配置项 CORS_URLS_REGEX 是一个正则表达式，它定义了哪些URL路径应该被 django-cors-headers 中间件处理。
 CORS_URLS_REGEX = r"^/api/.*$"
 
 # Your stuff...
